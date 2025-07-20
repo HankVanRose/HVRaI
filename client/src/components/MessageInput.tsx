@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import {
+  Box,
+  TextField,
+  IconButton,
+  CircularProgress,
+  Button,
+  Typography,
+  styled,
+} from '@mui/material';
+import { ImArrowUpLeft2 } from 'react-icons/im';
+
 import { chatStore } from '../stores/ChatStore';
 import { sendMessageWithAIResponse } from '../utils/api';
 
@@ -24,6 +33,22 @@ export const MessageInput = observer(() => {
     }
   };
 
+  const SendButton = styled(Button)(({ theme }) => ({
+    borderRadius: '50px',
+    height: '45px',
+    width: '105px',
+    color: 'white',
+    fontSize: '16px',
+    textTransform: 'none',
+    boxShadow: 'none',
+    background: '#ffa435',
+    cursor: 'pointer',
+
+    '&:hover': {
+      boxShadow: '0 2px 12px rgba(247, 149, 11, 0.5)',
+    },
+  }));
+
   return (
     <Box
       component="form"
@@ -33,23 +58,51 @@ export const MessageInput = observer(() => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
+        width: '100%',
+        maxWidth: 700,
+        margin: '0 auto',
       }}
     >
       <TextField
         variant="outlined"
-        placeholder="Введите сообщение..."
+        placeholder="Задай HVR любой вопрос..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        sx={{ minWidth: 500, maxWidth: 700 }}
+        sx={{
+          width: '100%',
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '22px',
+            paddingRight: '220px',
+          },
+        }}
         disabled={isLoading}
       />
-      <IconButton
+      <SendButton
         type="submit"
         color="primary"
         disabled={!message.trim() || isLoading}
+        sx={{
+          position: 'absolute',
+          right: 22,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 1,
+        }}
       >
-        {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
-      </IconButton>
+        {isLoading ? (
+          <CircularProgress size={34} />
+        ) : (
+          <>
+            <Typography
+              sx={{ display: { xs: 'none', sm: 'block' }, fontSize: 15 }}
+            >
+              Отправить
+            </Typography>
+            <ImArrowUpLeft2 style={{ rotate: '90deg', marginLeft: 3 }} />
+          </>
+        )}
+      </SendButton>
     </Box>
   );
 });

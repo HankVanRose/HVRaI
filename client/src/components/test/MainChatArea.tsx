@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { chatStore } from '../../stores/ChatStore';
 import { MessageInput } from '../MessageInput';
 import { Add } from '@mui/icons-material';
+import './MainChatArea.css';
 
 // const MessageBubble = styled(Paper)(({ theme }) => ({
 //   maxWidth: '70%',
@@ -81,7 +82,14 @@ export const MainChatArea = observer(() => {
               textAlign: 'center',
             }}
           >
-            <Avatar sx={{ width: 80, height: 80, mb: 2 }}>AI</Avatar>
+            <Avatar sx={{ width: 80, height: 80, mb: 2, background:'none' }}>
+              {' '}
+              <div className="orbit-spinner">
+                <div className="orbit"></div>
+                <div className="orbit"></div>
+                <div className="orbit"></div>
+              </div>
+            </Avatar>
             <Typography variant="h5" gutterBottom>
               Как я могу вам помочь сегодня?
             </Typography>

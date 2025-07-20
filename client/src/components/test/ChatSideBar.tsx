@@ -9,19 +9,20 @@ import {
   ListItemText,
   IconButton,
   Tooltip,
-  Divider,
+ 
   TextField,
   Typography,
   Avatar,
 } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import { FaRocketchat } from 'react-icons/fa';
 import { RiChatNewLine } from 'react-icons/ri';
 import {
-  ChevronLeft,
+   
   Add,
-  ChatBubbleOutline,
-  Menu,
-  ArrowBack,
+ 
+ 
+  
   Check,
   Close,
   Edit,
@@ -36,6 +37,14 @@ export const ChatSidebar = observer(
   ({ open, onToggle }: { open: boolean; onToggle: () => void }) => {
     const [editingChatId, setEditingChatId] = useState<string | null>(null);
     const [newTitle, setNewTitle] = useState('');
+    const [deletingChatId, setDeletingChatId] = useState<string | null>(null);
+
+    const handleDeleteWithAnimation = async (chatId: string) => {
+      setDeletingChatId(chatId);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await chatStore.deleteChat(chatId);
+      setDeletingChatId(null);
+    };
 
     const handleStartEdit = (chatId: string, currentTitle: string) => {
       setEditingChatId(chatId);
@@ -122,12 +131,19 @@ export const ChatSidebar = observer(
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
+                  gap: '10px',
                 }}
               >
                 <Typography sx={{ fontWeight: 600, padding: '30px 0  30px 0' }}>
                   HVR
                 </Typography>
-                <Tooltip title="Новый чат" placement="right">
+
+                <Tooltip title="Открыть боковую панель" placement="right">
+                  <IconButton onClick={onToggle} sx={{ width: 44, height: 44 }}>
+                    <BiWindowOpen style={{ rotate: '90deg' }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Создать новый чат" placement="right">
                   <IconButton
                     onClick={() => chatStore.createChat()}
                     sx={{ width: 44, height: 44 }}
@@ -135,103 +151,132 @@ export const ChatSidebar = observer(
                     <RiChatNewLine />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Открыть боковую панель" placement="right">
-                  <IconButton onClick={onToggle} sx={{ width: 44, height: 44 }}>
-                    <BiWindowOpen style={{ rotate: '90deg' }} />
-                  </IconButton>
-                </Tooltip>
               </Box>
             )}
           </Box>
 
           <List sx={{ overflowY: 'auto', height: 'calc(100vh - 120px)' }}>
-            {chatStore.chats.map((chat) =>
-              open ? (
-                <ListItem
-                  sx={{ width: 270 }}
-                  key={chat.id}
-                  secondaryAction={
-                    editingChatId === chat.id ? (
-                      <Box sx={{ display: 'flex' }}>
-                        <IconButton
-                          edge="start"
-                          onClick={() => handleSaveEdit(chat.id)}
-                        >
-                          <Check style={{ width: 20, height: 20 }} />
-                        </IconButton>
-                        <IconButton edge="start" onClick={handleCancelEdit}>
-                          <Close style={{ width: 20, height: 20 }} />
-                        </IconButton>
-                      </Box>
-                    ) : (
-                      <Box sx={{ display: 'flex' }}>
-                        <IconButton
-                          edge="end"
-                          onClick={() => handleStartEdit(chat.id, chat.title)}
-                        >
-                          <Edit style={{ width: 20, height: 20 }} />
-                        </IconButton>
-                        <IconButton
-                          edge="end"
-                          onClick={() => chatStore.deleteChat(chat.id)}
-                        >
-                          <Delete style={{ width: 20, height: 20 }} />
-                        </IconButton>
-                      </Box>
-                    )
-                  }
-                  disablePadding
-                >
-                  <ListItemButton
-                    selected={chat.id === chatStore.currentChatId}
-                    onClick={() => chatStore.setCurrentChat(chat.id)}
+            <AnimatePresence>
+              {chatStore.chats.map((chat ) =>
+                open ? (
+                  <motion.div
+                    key={chat.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -50, height: 0 }}
+                    transition={{ duration: 0.5 }}
                   >
-                    {editingChatId === chat.id ? (
-                      <TextField
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        size="small"
-                        fullWidth
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleSaveEdit(chat.id);
-                          if (e.key === 'Escape') handleCancelEdit();
-                        }}
-                      />
-                    ) : (
-                      <ListItemText
-                        primary={`${
-                          chat.title.length > 16
-                            ? `${chat.title.slice(0, 16)}...`
-                            : chat.title
-                        }`}
-                        secondary={new Date(chat.createdAt).toLocaleString()}
-                      />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-              ) : (
-                <Tooltip key={chat.id} title={chat.title} placement="right">
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      selected={chat.id === chatStore.currentChatId}
-                      onClick={() => chatStore.setCurrentChat(chat.id)}
+                    <ListItem
                       sx={{
-                        justifyContent: 'center',
-                        display: 'flex',
-                        alignItems: 'center',
-                        alignContent: 'center',
-                        padding: '20px',
+                        width: 270,
                       }}
+                      key={chat.id}
+                      secondaryAction={
+                        editingChatId === chat.id ? (
+                          <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                              edge="start"
+                              onClick={() => handleSaveEdit(chat.id)}
+                            >
+                              <Check style={{ width: 20, height: 20 }} />
+                            </IconButton>
+                            <IconButton edge="start" onClick={handleCancelEdit}>
+                              <Close style={{ width: 20, height: 20 }} />
+                            </IconButton>
+                          </Box>
+                        ) : (
+                          <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                              edge="end"
+                              onClick={() =>
+                                handleStartEdit(chat.id, chat.title)
+                              }
+                            >
+                              <Edit style={{ width: 20, height: 20 }} />
+                            </IconButton>
+                            <IconButton
+                              edge="end"
+                              onClick={() => handleDeleteWithAnimation(chat.id)}
+                              disabled={deletingChatId === chat.id}
+                            >
+                              <Delete style={{ width: 20, height: 20 }} />
+                            </IconButton>
+                          </Box>
+                        )
+                      }
+                      disablePadding
                     >
-                      <ListItemIcon sx={{ minWidth: 'auto' }}>
-                        <FaRocketchat style={{ width: 20 }} />
-                      </ListItemIcon>
-                    </ListItemButton>
-                  </ListItem>
-                </Tooltip>
-              )
-            )}
+                      <ListItemButton
+                        selected={chat.id === chatStore.currentChatId}
+                        onClick={() => chatStore.setCurrentChat(chat.id)}
+                      >
+                        {editingChatId === chat.id ? (
+                          <TextField
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            size="small"
+                            fullWidth
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveEdit(chat.id);
+                              if (e.key === 'Escape') handleCancelEdit();
+                            }}
+                          />
+                        ) : (
+                          <ListItemText
+                            primary={`${
+                              chat.title.length > 16
+                                ? `${chat.title.slice(0, 16)}...`
+                                : chat.title
+                            }`}
+                            secondary={new Date(
+                              chat.createdAt
+                            ).toLocaleString()}
+                          />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
+                  </motion.div>
+                ) : (
+                  <Tooltip
+                    key={chat.id}
+                    title={`${
+                      chat.title.length > 16
+                        ? `${chat.title.slice(0, 16)}...`
+                        : chat.title
+                    }`}
+                    placement="right"
+                  >
+                    <ListItem sx={{ justifyContent: 'center' }}>
+                      <motion.div
+                        key={chat.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -50, height: 0 }}
+                    transition={{ duration: 0.5 }}
+                      >
+                        <ListItemButton
+                          selected={chat.id === chatStore.currentChatId}
+                          onClick={() => chatStore.setCurrentChat(chat.id)}
+                          sx={{
+                            justifyContent: 'center',
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 'auto' }}>
+                            <FaRocketchat style={{ width: 20 }} />
+                          </ListItemIcon>
+                        </ListItemButton>
+                      </motion.div>
+                    </ListItem>
+                  </Tooltip>
+                )
+              )}
+            </AnimatePresence>
           </List>
           {open ? (
             <Box
