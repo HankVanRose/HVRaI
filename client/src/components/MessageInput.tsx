@@ -4,7 +4,6 @@ import { Box, TextField, IconButton, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { chatStore } from '../stores/ChatStore';
 import { sendMessageWithAIResponse } from '../utils/api';
- 
 
 export const MessageInput = observer(() => {
   const [message, setMessage] = useState('');
@@ -26,14 +25,22 @@ export const MessageInput = observer(() => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        p: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <TextField
-        fullWidth
         variant="outlined"
         placeholder="Введите сообщение..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        sx={{ mr: 1 }}
+        sx={{ minWidth: 500, maxWidth: 700 }}
         disabled={isLoading}
       />
       <IconButton
@@ -41,11 +48,7 @@ export const MessageInput = observer(() => {
         color="primary"
         disabled={!message.trim() || isLoading}
       >
-        {isLoading ? (
-          <CircularProgress size={24} />
-        ) : (
-          <SendIcon />
-        )}
+        {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
       </IconButton>
     </Box>
   );

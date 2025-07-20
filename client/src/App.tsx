@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Box, createTheme, CssBaseline, styled, ThemeProvider } from '@mui/material';
+import {
+  Box,
+  createTheme,
+  CssBaseline,
+  styled,
+  ThemeProvider,
+} from '@mui/material';
 import { ChatList } from './components/ChatList';
 import { MessageList } from './components/MessageList';
 import { MessageInput } from './components/MessageInput';
@@ -9,23 +15,22 @@ import { ChatLayout } from './Layout/ChatLayout';
 import { ChatSidebar } from './components/test/ChatSideBar';
 import { MainChatArea } from './components/test/MainChatArea';
 
- 
 const AppContainer = styled(Box)({
   display: 'flex',
   height: '100vh',
 });
 export const App = observer(() => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+ 
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
     <>
-       <AppContainer>
-        <ChatSidebar 
-          open={sidebarOpen} 
-          onToggle={() => setSidebarOpen(!sidebarOpen)} 
-        />
-        <MainChatArea 
-          onMenuClick={() => setSidebarOpen(true)}
-        />
+      <AppContainer>
+        <ChatSidebar
+          open={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+        />{' '}
+        <MainChatArea onMenuClick={() => setSidebarOpen(true)} />
       </AppContainer>
- </>
-)});
+    </>
+  );
+});

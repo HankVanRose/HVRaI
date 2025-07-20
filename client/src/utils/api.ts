@@ -1,43 +1,33 @@
 import { chatStore } from '../stores/ChatStore';
-import type { DeepSeekRole, MessageRole } from '../types/types';
+import type { DeepSeekRole, Message } from '../types/types';
 
-interface DeepSeekMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+interface YandexGPTMessage {
+  role: 'user' | 'assistant'; // YandexGPT использует только эти роли
+  text: string;
 }
 
-export const fetchAIResponse = async (
-  messages: DeepSeekMessage[]
-): Promise<string> => {
-  const YANDEX_API_KEY = import.meta.env.VITE_YANDEX_OAUTH_KEY;
-
-  if (!YANDEX_API_KEY) {
-    console.error('DeepSeek API Key is missing!');
-    return '❌ Ошибка: API-ключ не указан';
-  }
-
+export const fetchYandexGPTResponse = async (messages: YandexGPTMessage[]): Promise<string> => {
   try {
-    const response = await fetch('https://llm.api.cloud.yandex.net/llm/v1alpha/chat', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Api-Key ${import.meta.env.VITE_YANDEX_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'general',
-      messages: messages.map(msg => ({
-        role: msg.role === 'assistant' ? 'assistant' : 'user',
-        text: msg.content
-      }))
-    })
-  });
-  const data = await response.json();
-  return data.result?.alternatives[0]?.message?.text || 'Ошибка';
+    const response = await fetch('http://localhost:3001/api/yandex-gpt', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'general',
+        messages: messages
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`YandexGPT API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.result?.alternatives[0]?.message?.text || 'Пустой ответ';
   } catch (error) {
-    console.error('DeepSeek Request Failed:', error);
-    return `⚠️ Ошибка: ${
-      error instanceof Error ? error.message : String(error)
-    }`;
+    console.error('YandexGPT Error:', error);
+    return 'Ошибка соединения с YandexGPT';
   }
 };
 
@@ -58,18 +48,16 @@ export const sendMessageWithAIResponse = async (
   const currentChat = chatStore.currentChat;
   if (!currentChat) return;
 
-  // Преобразуем сообщения в формат DeepSeek
-  const apiMessages: DeepSeekMessage[] = currentChat.messages
-    .filter(
-      (msg) => ['system', 'user', 'assistant'].includes(msg.role) // Фильтруем только допустимые роли
-    )
-    .map((msg) => ({
-      role: msg.role as DeepSeekRole, // Приводим тип, так как мы уже отфильтровали
-      content: msg.content,
+  // Преобразуем сообщения в формат YandexGPT
+  const apiMessages: YandexGPTMessage[] = currentChat.messages
+    .filter(msg => ['user', 'assistant'].includes(msg.role))
+    .map(msg => ({
+      role: msg.role as 'user' | 'assistant',
+      text: msg.content
     }));
 
-  // Получаем ответ от AI
-  const aiResponse = await fetchAIResponse(apiMessages);
+  // Получаем ответ от YandexGPT
+  const aiResponse = await fetchYandexGPTResponse(apiMessages);
 
   // Добавляем ответ AI в чат
   await chatStore.addMessage(chatStore.currentChatId, {
