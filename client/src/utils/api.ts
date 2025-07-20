@@ -1,30 +1,66 @@
+import axios from 'axios';
 import { chatStore } from '../stores/ChatStore';
-import type { DeepSeekRole, Message } from '../types/types';
 
 interface YandexGPTMessage {
-  role: 'user' | 'assistant'; // YandexGPT использует только эти роли
+  role: 'user' | 'assistant';
   text: string;
 }
 
-export const fetchYandexGPTResponse = async (messages: YandexGPTMessage[]): Promise<string> => {
-  try {
-    const response = await fetch('http://localhost:3001/api/yandex-gpt', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'general',
-        messages: messages
-      })
-    });
+interface YandexGPTRequest {
+  modelUri: string;
+  completionOptions: {
+    stream: boolean;
+    temperature: number;
+    maxTokens: string;
+    reasoningOptions: {
+      mode: 'DISABLED' | 'ENABLED';
+    };
+  };
+  messages: YandexGPTMessage[];
+}
 
-    if (!response.ok) {
-      throw new Error(`YandexGPT API Error: ${response.status}`);
+interface YandexGPTResponse {
+  result?: {
+    alternatives?: Array<{
+      message?: {
+        text?: string;
+      };
+    }>;
+  };
+}
+
+export const fetchYandexGPTResponse = async (
+  messages: YandexGPTMessage[]
+): Promise<string> => {
+  try {
+    const requestData: YandexGPTRequest = {
+      modelUri: 'gpt://b1gsv64ggetlkt9cfnr3/yandexgpt',
+      completionOptions: {
+        stream: false,
+        temperature: 0.6,
+        maxTokens: '2000',
+        reasoningOptions: {
+          mode: 'DISABLED',
+        },
+      },
+      messages,
+    };
+
+    const response = await axios.post<YandexGPTResponse>(
+      `${import.meta.env.VITE_API_URL}/yandex/api/yandex-gpt`,
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!response.data) {
+      throw new Error('YandexGPT API вернул пустой ответ');
     }
 
-    const data = await response.json();
-    return data.result?.alternatives[0]?.message?.text || 'Пустой ответ';
+    return response.data.result?.alternatives?.[0]?.message?.text || 'Пустой ответ';
   } catch (error) {
     console.error('YandexGPT Error:', error);
     return 'Ошибка соединения с YandexGPT';
@@ -48,12 +84,13 @@ export const sendMessageWithAIResponse = async (
   const currentChat = chatStore.currentChat;
   if (!currentChat) return;
 
-  // Преобразуем сообщения в формат YandexGPT
-  const apiMessages: YandexGPTMessage[] = currentChat.messages
-    .filter(msg => ['user', 'assistant'].includes(msg.role))
-    .map(msg => ({
+  // Преобразуем сообщения в формат YandexGPT (последние 10 сообщений)
+  const apiMessages = currentChat.messages
+    .filter((msg) => ['user', 'assistant'].includes(msg.role))
+    .slice(-10) // Ограничиваем историю сообщений
+    .map((msg) => ({
       role: msg.role as 'user' | 'assistant',
-      text: msg.content
+      text: msg.content,
     }));
 
   // Получаем ответ от YandexGPT

@@ -1,47 +1,28 @@
 import {
   Box,
-  IconButton,
-  TextField,
   Typography,
   Avatar,
-  Paper,
-  styled,
   ListItemText,
   ListItem,
   Button,
 } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { chatStore } from '../../stores/ChatStore';
 import { MessageInput } from '../MessageInput';
 import { Add } from '@mui/icons-material';
-import './MainChatArea.css';
 
-// const MessageBubble = styled(Paper)(({ theme }) => ({
-//   maxWidth: '70%',
-//   padding: '12px 16px',
-//   marginBottom: '12px',
-//   borderRadius: '18px',
-//   alignSelf: 'flex-start',
-//   backgroundColor: theme.palette.grey[100],
-// }));
-
-// const UserMessageBubble = styled(MessageBubble)(({ theme }) => ({
-//   alignSelf: 'flex-end',
-//   backgroundColor: theme.palette.primary.main,
-//   color: theme.palette.primary.contrastText,
-// }));
+import Spinner from '../UI/Spinner/Spinner';
 
 export const MainChatArea = observer(() => {
-  const [message, setMessage] = useState('');
   const currentChat = chatStore?.currentChat;
-  const bottomRef = useRef<HTMLDivElement>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollToBottom();
-  }, [currentChat?.messages]); // Добавляем messages в зависимости
+  }, [currentChat?.messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
@@ -61,7 +42,6 @@ export const MainChatArea = observer(() => {
         transition: 'margin-left 0.5s ease',
       }}
     >
-      {/* Область сообщений */}
       <Box
         sx={{
           flex: 1,
@@ -82,14 +62,7 @@ export const MainChatArea = observer(() => {
               textAlign: 'center',
             }}
           >
-            <Avatar sx={{ width: 80, height: 80, mb: 2, background:'none' }}>
-              {' '}
-              <div className="orbit-spinner">
-                <div className="orbit"></div>
-                <div className="orbit"></div>
-                <div className="orbit"></div>
-              </div>
-            </Avatar>
+            <Spinner />
             <Typography variant="h5" gutterBottom>
               Как я могу вам помочь сегодня?
             </Typography>

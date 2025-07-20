@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  Box,
-  TextField,
-  IconButton,
-  CircularProgress,
-  Button,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Box, TextField, CircularProgress, Typography } from '@mui/material';
 import { ImArrowUpLeft2 } from 'react-icons/im';
 
 import { chatStore } from '../stores/ChatStore';
 import { sendMessageWithAIResponse } from '../utils/api';
+import { SendButton } from './atom/SendButton';
 
 export const MessageInput = observer(() => {
   const [message, setMessage] = useState('');
@@ -32,22 +25,6 @@ export const MessageInput = observer(() => {
       setIsLoading(false);
     }
   };
-
-  const SendButton = styled(Button)(({ theme }) => ({
-    borderRadius: '50px',
-    height: '45px',
-    width: '105px',
-    color: 'white',
-    fontSize: '16px',
-    textTransform: 'none',
-    boxShadow: 'none',
-    background: '#ffa435',
-    cursor: 'pointer',
-
-    '&:hover': {
-      boxShadow: '0 2px 12px rgba(247, 149, 11, 0.5)',
-    },
-  }));
 
   return (
     <Box
