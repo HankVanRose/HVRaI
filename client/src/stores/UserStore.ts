@@ -41,7 +41,7 @@ class UserStore {
         `${import.meta.env.VITE_API_URL}/auth/signin`,
         userData
       );
-      this.setUser(response.data.user); // Используем action
+      this.setUser(response.data.user);
       setAccessToken(response.data.accessToken);
       return response.data.user;
     } catch (error) {

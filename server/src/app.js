@@ -17,10 +17,7 @@ const corsConfig = {
   credentials: true,
 };
 app.use(cors(corsConfig));
-app.use(
-  '/uploads/avatars',
-  express.static(path.join(__dirname, 'uploads/avatars'))
-);
+
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));

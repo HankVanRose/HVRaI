@@ -44,7 +44,11 @@ const WelcomePage = observer(() => {
           <div>{!isLoginForm && <Register />}</div>
         </Fade>
 
-        <Button variant="text" onClick={toggleForm} sx={{ mt: 1 }}>
+        <Button
+          variant="text"
+          onClick={toggleForm}
+          sx={{ mt: 1, color: '#ff1d5e' }}
+        >
           {isLoginForm ? 'Нет аккаунта? Создать' : 'Уже есть аккаунт? Войти'}
         </Button>
       </Box>

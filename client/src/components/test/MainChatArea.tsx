@@ -94,7 +94,7 @@ export const MainChatArea = observer(() => {
                   maxWidth: '70%',
                   p: 2,
                   borderRadius: 4,
-                  bgcolor: message.role === 'user' ? '#b76052' : '#bfb09e',
+                  bgcolor: message.role === 'user' ? '#a52814c4' : '#bba891',
                   color: message.role === 'user' ? 'white' : 'text.secondary',
                 }}
               >
@@ -121,7 +121,7 @@ export const MainChatArea = observer(() => {
           variant="contained"
           startIcon={<Add />}
           onClick={() => chatStore.createChat()}
-          sx={{ mr: 1 }}
+          sx={{ mr: 1, background:'#ff1d5e' }}
         >
           Новый чат
         </Button>

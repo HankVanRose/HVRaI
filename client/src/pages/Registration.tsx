@@ -82,7 +82,12 @@ const Register = observer(() => {
             onChange={handleChange}
             required
           />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, background: '#ff1d5e' }}
+          >
             Зарегистрироваться
           </Button>
         </form>

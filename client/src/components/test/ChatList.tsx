@@ -25,9 +25,9 @@ export const ChatList = observer(({ open }: { open: boolean }) => {
     } else if (isThisWeek(date)) {
       groupKey = 'На этой неделе';
     } else if (isThisYear(date)) {
-      groupKey = format(date, 'MMMM'); // Название месяца
+      groupKey = format(date, 'MMMM');  
     } else {
-      groupKey = format(date, 'MMMM yyyy'); // Месяц и год
+      groupKey = format(date, 'MMMM yyyy');  
     }
 
     if (!acc[groupKey]) {

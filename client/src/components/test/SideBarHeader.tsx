@@ -67,7 +67,7 @@ export const SidebarHeader = ({ open, onToggle }: SidebarHeaderProps) => {
         startIcon={<Add />}
         onClick={() => chatStore.createChat()}
         fullWidth
-        sx={{ mr: 1 }}
+        sx={{ mr: 1, background:'#ff1d5e' }}
       >
         Новый чат
       </Button>
