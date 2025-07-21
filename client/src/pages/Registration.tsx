@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button, TextField, Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import UserStore from '../stores/UserStore';
+import { validateEmail, validatePassword, validateUsername } from '../utils/validation';
 
 interface IFormData {
   userName: string;
@@ -16,8 +17,8 @@ const Register = observer(() => {
     email: '',
     password: '',
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<IFormData>>({});
+  const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,32 +27,47 @@ const Register = observer(() => {
       ...prev,
       [name]: value,
     }));
+    // Очищаем ошибку при изменении поля
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
-  console.log(UserStore?.user);
+
+  const validateForm = (): boolean => {
+    const newErrors = {
+      userName: validateUsername(formData.userName),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    };
+    
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setFormError(null);
+    
+    if (!validateForm()) return;
+    
     try {
       await UserStore.register(formData);
       navigate('/chat');
     } catch (error) {
-      setError('Registration failed. Please try again.');
+      setFormError('Registration failed. Please try again.');
       console.error(error);
     }
   };
+
   return (
     <Container maxWidth="xs">
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          mt: 4,
-          background: 'var(--fancy-gradient)',
-        }}
-      >
+      <Paper elevation={3} sx={{ p: 4, mt: 4, background: 'var(--fancy-gradient)' }}>
         <Typography variant="h5" align="center" gutterBottom>
           Регистрация
         </Typography>
+        {formError && (
+          <Typography color="error" align="center" sx={{ mb: 2 }}>
+            {formError}
+          </Typography>
+        )}
         <form onSubmit={handleSubmit}>
           <TextField
             name="userName"
@@ -60,6 +76,8 @@ const Register = observer(() => {
             margin="normal"
             value={formData.userName}
             onChange={handleChange}
+            error={!!errors.userName}
+            helperText={errors.userName}
             required
           />
           <TextField
@@ -70,6 +88,8 @@ const Register = observer(() => {
             margin="normal"
             value={formData.email}
             onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
             required
           />
           <TextField
@@ -80,6 +100,8 @@ const Register = observer(() => {
             margin="normal"
             value={formData.password}
             onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
             required
           />
           <Button
@@ -95,5 +117,4 @@ const Register = observer(() => {
     </Container>
   );
 });
-
 export default Register;

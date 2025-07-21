@@ -12,9 +12,9 @@ import { useEffect, useRef } from 'react';
 import { chatStore } from '../../stores/ChatStore';
 import { MessageInput } from '../MessageInput';
 import { Add } from '@mui/icons-material';
-
+import ava from '../../assets/ava.jpg';
 import Spinner from '../UI/Spinner/Spinner';
-
+import ParticlesBg from 'particles-bg';
 export const MainChatArea = observer(() => {
   const currentChat = chatStore?.currentChat;
 
@@ -30,6 +30,35 @@ export const MainChatArea = observer(() => {
       block: 'end',
     });
   };
+
+  if (!currentChat) {
+    return (
+      
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
+        <ParticlesBg color="#000000" type="cobweb" num={50} bg={true} />
+        <Spinner />
+        <Typography variant="h6" color="text.secondary">
+          Выберите чат или создайте новый
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => chatStore.createChat()}
+          sx={{ mr: 1, mt: 2, background: '#ff1d5e' }}
+        >
+          Новый чат
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -82,6 +111,7 @@ export const MainChatArea = observer(() => {
               }}
             >
               <Avatar
+                src={message.role === 'user' ? ava : 'U'}
                 sx={{
                   ml: message.role === 'user' ? 2 : 0,
                   mr: message.role === 'user' ? 0 : 2,
@@ -94,7 +124,7 @@ export const MainChatArea = observer(() => {
                   maxWidth: '70%',
                   p: 2,
                   borderRadius: 4,
-                  bgcolor: message.role === 'user' ? '#a52814c4' : '#bba891',
+                  bgcolor: message.role === 'user' ? '#ff1d5db8' : '#b0b3bf',
                   color: message.role === 'user' ? 'white' : 'text.secondary',
                 }}
               >
@@ -121,7 +151,7 @@ export const MainChatArea = observer(() => {
           variant="contained"
           startIcon={<Add />}
           onClick={() => chatStore.createChat()}
-          sx={{ mr: 1, background:'#ff1d5e' }}
+          sx={{ mr: 1, background: '#ff1d5e' }}
         >
           Новый чат
         </Button>

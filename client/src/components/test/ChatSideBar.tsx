@@ -12,12 +12,12 @@ export const ChatSidebar = observer(
         variant="permanent"
         anchor="left"
         sx={{
-          width: open ? 280 : 68,
+          width: open ? 271 : 68,
           flexShrink: 0,
           whiteSpace: 'nowrap',
           transition: 'width 0.5s ease',
           '& .MuiDrawer-paper': {
-            width: open ? 268 : 68,
+            width: open ? 271 : 68,
             overflowX: 'hidden',
             transition: 'width 0.5s ease',
             boxSizing: 'border-box',

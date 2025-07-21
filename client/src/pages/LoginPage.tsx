@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { Button, TextField, Container, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import UserStore from '../stores/UserStore';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 const LoginPage = observer(() => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [formError, setFormError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,29 +18,37 @@ const LoginPage = observer(() => {
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors = {
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    };
+    
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setFormError('');
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
-
     try {
-      await UserStore.login({
-        email: formData.email,
-        password: formData.password,
-      });
+      await UserStore.login(formData);
       navigate('/chat');
     } catch (error: unknown) {
       if (error instanceof Error) {
         if (error.message.includes('Incorrect email or password')) {
-          setError('Неверный email или пароль');
+          setFormError('Неверный email или пароль');
         } else if (error.message.includes('User not found')) {
-          setError('Пользователь с таким email не найден');
-        } else if (error.message.includes('Invalid email or password format')) {
-          setError('Некорректный формат email или пароля');
+          setFormError('Пользователь с таким email не найден');
         } else {
-          setError('Произошла ошибка при входе. Попробуйте позже.');
+          setFormError('Произошла ошибка при входе. Попробуйте позже.');
         }
       }
     } finally {
@@ -49,20 +58,13 @@ const LoginPage = observer(() => {
 
   return (
     <Container maxWidth="xs">
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          mt: 4,
-          background: 'var(--fancy-gradient)',
-        }}
-      >
+      <Paper elevation={3} sx={{ p: 4, mt: 4, background: 'var(--fancy-gradient)' }}>
         <Typography variant="h5" align="center" gutterBottom>
           Вход
         </Typography>
-        {error && (
-          <Typography color="error" align="center">
-            {error}
+        {formError && (
+          <Typography color="error" align="center" sx={{ mb: 2 }}>
+            {formError}
           </Typography>
         )}
         <form onSubmit={handleSubmit}>
@@ -74,6 +76,8 @@ const LoginPage = observer(() => {
             margin="normal"
             value={formData.email}
             onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
             required
           />
           <TextField
@@ -84,6 +88,8 @@ const LoginPage = observer(() => {
             margin="normal"
             value={formData.password}
             onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
             required
           />
           <Button
@@ -91,8 +97,9 @@ const LoginPage = observer(() => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, background: '#ff1d5e' }}
+            disabled={isLoading}
           >
-            Войти
+            {isLoading ? 'Загрузка...' : 'Войти'}
           </Button>
         </form>
       </Paper>

@@ -5,7 +5,6 @@ const generateToken = require('../utils/generateToken');
 
 router.get('/refresh', verifyRefreshToken, (req, res) => {
   try {
-     console.log('Cookies received:', req.cookies); 
     const { user } = res.locals;
     const { accessToken, refreshToken } = generateToken({ user });
 

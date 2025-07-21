@@ -1,5 +1,4 @@
-import { Box, Divider, List, ListSubheader } from '@mui/material';
-import { AnimatePresence } from 'framer-motion';
+import { Box, List, ListSubheader } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { chatStore } from '../../stores/ChatStore';
 import { ChatListItem } from './ChatListItem';
@@ -25,9 +24,9 @@ export const ChatList = observer(({ open }: { open: boolean }) => {
     } else if (isThisWeek(date)) {
       groupKey = 'На этой неделе';
     } else if (isThisYear(date)) {
-      groupKey = format(date, 'MMMM');  
+      groupKey = format(date, 'MMMM');
     } else {
-      groupKey = format(date, 'MMMM yyyy');  
+      groupKey = format(date, 'MMMM yyyy');
     }
 
     if (!acc[groupKey]) {
@@ -37,7 +36,6 @@ export const ChatList = observer(({ open }: { open: boolean }) => {
     return acc;
   }, {} as Record<string, Chat[]>);
 
-  // Сортируем группы по дате (новые сверху)
   const sortedGroups = Object.entries(groupedChats).sort(
     ([_, chatsA], [__, chatsB]) => {
       return (
