@@ -29,11 +29,16 @@ export const ChatEditControls = ({
 
   if (editingChatId === chatId) {
     return (
-      <Box sx={{ display: 'flex' }}>
-        <IconButton edge="start" onClick={onSaveEdit}>
+      <Box sx={{ display: 'flex',   }}>
+        <IconButton
+          size="small"
+          edge="end"
+          onClick={onSaveEdit}
+          
+        >
           <Check style={{ width: 20, height: 20 }} />
         </IconButton>
-        <IconButton edge="start" onClick={onCancelEdit}>
+        <IconButton edge="end" onClick={onCancelEdit}>
           <Close style={{ width: 20, height: 20 }} />
         </IconButton>
       </Box>
@@ -41,7 +46,7 @@ export const ChatEditControls = ({
   }
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', }}>
       <IconButton edge="end" onClick={onStartEdit}>
         <Edit style={{ width: 20, height: 20 }} />
       </IconButton>

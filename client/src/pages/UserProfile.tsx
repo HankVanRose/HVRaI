@@ -13,6 +13,7 @@ import ava from '../assets/ava.jpg';
 
 import { useNavigate } from 'react-router-dom';
 import UserStore from '../stores/UserStore';
+import ParticlesBg from 'particles-bg';
 
 const UserProfile = observer(() => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const UserProfile = observer(() => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      <ParticlesBg color="#000000" type="cobweb" num={50} bg={true} />
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
           Профиль пользователя
@@ -105,7 +107,11 @@ const UserProfile = observer(() => {
           </Box>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          <Button variant="contained" onClick={() => navigate(-1)}>
+          <Button
+            variant="contained"
+            onClick={() => navigate(-1)}
+            sx={{ background: '#ff1d5e' }}
+          >
             Назад
           </Button>
         </Box>

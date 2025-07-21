@@ -85,6 +85,7 @@ export const ChatListItem = observer(({ chat, open }: ChatListItemProps) => {
         disablePadding
       >
         <ListItemButton
+        
           selected={chat.id === chatStore.currentChatId}
           onClick={() => chatStore.setCurrentChat(chat.id)}
         >
@@ -92,7 +93,7 @@ export const ChatListItem = observer(({ chat, open }: ChatListItemProps) => {
             <TextField
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              size="small"
+              sx={{maxWidth:190}}
               fullWidth
               autoFocus
               onKeyDown={(e) => {
