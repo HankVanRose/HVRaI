@@ -6,7 +6,9 @@ client => npm i
 server => npm i
 
 Для работы приложения, потребуюется создание .env файлов как на сервере так и на клиенте
-в .env на клиенте
+
+<h3> .env на клиенте</h3>
+
 
 
 VITE_YANDEX_API_KEY=введите свой api ключ
@@ -27,8 +29,8 @@ VITE_API_URL=http://localhost:3000/api
 VITE_API_STRAIGHT=http://localhost:3000/api 
 
 
+<h3> .env на сервере: </h3>
 
-.env на сервере:
 
 PORT=3000
 
